@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Cenas/jogo1.unity
     guid: 18f10dbfd09f8134db5b2abc3ecfb2c6
+  - enabled: 1
+    path: Assets/Cenas/posJogo.unity
+    guid: 0894f4a95abaf914485a9f3b6810ef6f
   m_configObjects: {}

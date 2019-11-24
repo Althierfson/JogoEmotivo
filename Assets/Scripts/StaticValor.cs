@@ -6,4 +6,6 @@ public class StaticValor : MonoBehaviour {
     
     public static string id = "-1";
     public static bool condicao = true;
+
+    public static Arquivos arquivos;
 }

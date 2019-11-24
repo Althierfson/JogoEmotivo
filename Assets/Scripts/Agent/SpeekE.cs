@@ -16,7 +16,6 @@ public class SpeekE : MonoBehaviour{
     public Text textBallon;            // Texto no balão
     private string animState;          // Guarda a animação atual
     Frase estadoAtual = new Frase();   // Objeto estado
-    Arquivos ctrArq;                   // Objeto para acesso a L/E nos arquivos
     public int[] tabuleiro;
     public int dica1, dica2;
     public bool agentInWork = false;
@@ -26,8 +25,8 @@ public class SpeekE : MonoBehaviour{
         ballonImage.SetActive(false);      // esconde a imagem do balão
         som = GetComponent<AudioSource>();
 
-        ctrArq = new Arquivos(StaticValor.id);        // Criando novo arquivo com ID informado
-        print(ctrArq.filePath);
+        StaticValor.arquivos = new Arquivos(StaticValor.id);        // Criando novo arquivo com ID informado
+        print(StaticValor.arquivos.filePath);
     }
 
     public void Speek(){
@@ -35,7 +34,6 @@ public class SpeekE : MonoBehaviour{
 
         //Speaker.Speak(text.text, null, Speaker.VoiceForName("Microsoft Daniel"));
         Speaker.Speak(estadoAtual.msg, som, Speaker.VoiceForName("Microsoft Daniel"));
-        ctrArq.registra(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
     }
 
     void Update(){
@@ -86,22 +84,24 @@ public class SpeekE : MonoBehaviour{
         */
 
         if (rec == true){
-            estadoAtual = ctrArq.pickUpEmocao("Alegre");
+            estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
         }else{
 
             int sentimento = (int)Random.Range(1, 3);
 
             if(sentimento == 1){
-                estadoAtual = ctrArq.pickUpEmocao("Triste");
+                estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
             }else if(sentimento == 2){
-                estadoAtual = ctrArq.pickUpEmocao("Bravo");
+                estadoAtual = StaticValor.arquivos.pickUpEmocao("Bravo");
             }else if(sentimento == 3){
-                estadoAtual = ctrArq.pickUpEmocao("Vergonha");
+                estadoAtual = StaticValor.arquivos.pickUpEmocao("Vergonha");
             }else{
-                estadoAtual = ctrArq.pickUpEmocao("Triste");
+                estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
             }
         }
         if(estadoAtual != null){
+            StaticValor.arquivos.saveReacao(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
+            StaticValor.arquivos.registra();
             setConf();
 
             startAnimation();
@@ -151,11 +151,12 @@ public class SpeekE : MonoBehaviour{
 
     private void falarDica(){
 
-        estadoAtual = ctrArq.getFrases("2");
+        estadoAtual = StaticValor.arquivos.getFrases("2");
         Debug.Log("arquivo speek: "+estadoAtual.msg);
         estadoAtual.msg = "Esperimente virar a carta";
 
         estadoAtual.msg = estadoAtual.msg+ " " +dica1.ToString()+ " e a "+ dica2.ToString()+ ".";
+        StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
         Debug.Log(estadoAtual.msg);
 
         setConf();

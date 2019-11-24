@@ -10,6 +10,18 @@ public class Arquivos{
     public List<Frase> frases;
     string id;
     public string filePath = Application.persistentDataPath;
+    private int interacao;
+
+    // Informações de gravação
+
+    private string DicaAgente;
+    private string CódigoDica;
+    private string EmoçãoDica;
+    private string EscolhaJogador;
+    private bool EraAdoAgente;
+    private string EmoçãoClasse;
+    private string Codigo;
+    private string Frase;
 
     public Arquivos(string id){
         frases = new List<Frase>();
@@ -23,10 +35,11 @@ public class Arquivos{
             Criar o arquivo de saida para o individo
         */
         string cabecalho;
+        this.interacao = 1;
         Debug.Log(filePath);
         // C:/Users/007br/Documents/TCC/UnityEmotionalAgent/EmotionalAgent/Assets/Scripts
         using(StreamWriter file = File.CreateText(filePath + "/individo" + id + ".txt")){
-                cabecalho = "EmoçãoClasse;Código;Frase";
+                cabecalho = "Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
                 file.WriteLine(cabecalho);
             }
         return;
@@ -57,13 +70,33 @@ public class Arquivos{
         file.Close();
     }
 
-    public void registra(string msg, string cod, string emocao){
+    public void saveDica(string msg, string cod, string emocao){
+        this.DicaAgente = msg;
+        this.CódigoDica = cod;
+        this.EmoçãoDica = emocao;
+    }
+
+    public void saveEscolha(string escolha, bool doAgente){
+        this.EscolhaJogador = escolha;
+        this.EraAdoAgente = doAgente;
+    }
+
+    public void saveReacao(string msg, string cod, string emocao){
+        this.EmoçãoClasse = emocao;
+        this.Codigo = cod;
+        this.Frase = msg;
+    }
+
+    public void registra(){
         /*
             Função responsavel por receber os dados e gravalos no arquivo de saida
         */
         using(var file = new StreamWriter(filePath + "/individo" + id + ".txt", true)){
-                file.WriteLine(emocao + ";" + cod + ";" + msg + ";");
+                file.WriteLine(this.interacao.ToString()+";"+this.DicaAgente+";"+this.CódigoDica+";"+this.EmoçãoDica+";"+
+                                this.EscolhaJogador+";"+this.EraAdoAgente.ToString()+";"+
+                                this.EmoçãoClasse+";"+this.Codigo+";"+this.Frase+";");
             }
+        interacao++;
     }
 
     public Frase getFrases(string cod){

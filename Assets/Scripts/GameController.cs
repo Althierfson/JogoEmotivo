@@ -15,6 +15,8 @@ public class GameController : MonoBehaviour {
 
     public List<Button> btns = new List<Button>();
 
+    public List<Text> texts = new List<Text>();
+
     private bool firstGuess, secondGuess;
     private int countGuesses;
     private int countCorrectGuesses;
@@ -54,6 +56,8 @@ public class GameController : MonoBehaviour {
             {
                 btns.Add(objects[i].GetComponent<Button>());
                 btns[i].image.sprite = bgImage;
+                texts.Add(objects[i].GetComponentInChildren<Text>());
+                texts[i].text = (i+1).ToString();
             }
     }
 
@@ -100,6 +104,8 @@ public class GameController : MonoBehaviour {
 
                 btns[firstGuessIndex].image.sprite = gamePuzzles[firstGuessIndex];
 
+                texts[firstGuessIndex].enabled = false;
+
             } else if (!secondGuess)
             {
                 secondGuess = true;
@@ -108,6 +114,8 @@ public class GameController : MonoBehaviour {
                 secondGuessPuzzle = gamePuzzles[secondGuessIndex].name;
 
                 btns[secondGuessIndex].image.sprite = gamePuzzles[secondGuessIndex];
+
+                texts[secondGuessIndex].enabled = false;
 
                 if(firstGuessPuzzle == secondGuessPuzzle){
                     Debug.Log("Cartas corretas");
@@ -145,6 +153,9 @@ public class GameController : MonoBehaviour {
 
             btns[firstGuessIndex].image.sprite = bgImage;
             btns[secondGuessIndex].image.sprite = bgImage;
+
+            texts[firstGuessIndex].enabled = true;
+            texts[secondGuessIndex].enabled = true;
         }
 
         yield return new WaitForSeconds(.5f);
@@ -161,6 +172,7 @@ public class GameController : MonoBehaviour {
         {
             Debug.Log("Fim do Jogo");
             Debug.Log("Foram " + countGuesses + " tentativas para vencer");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("posJogo");
 
         }
     }
@@ -188,16 +200,19 @@ public class GameController : MonoBehaviour {
         if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
             if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
                 blockInteracao();
+                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
                 speekE.reacao(true);
                 openInteracao();
                 Debug.Log("GameController: Usuario escolheo as cartas do Agente");
             }else{
                 blockInteracao();
+                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
                 speekE.reacao(false);
                 openInteracao();
                 Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
             }
         }else{
+            StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
             speekE.reacao(false);
             Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
         }
