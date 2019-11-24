@@ -26,7 +26,7 @@ public class SpeekE : MonoBehaviour{
         ballonImage.SetActive(false);      // esconde a imagem do balão
         som = GetComponent<AudioSource>();
 
-        ctrArq = new Arquivos("1");        // Criando novo arquivo com ID informado
+        ctrArq = new Arquivos(StaticValor.id);        // Criando novo arquivo com ID informado
         print(ctrArq.filePath);
     }
 
@@ -105,6 +105,14 @@ public class SpeekE : MonoBehaviour{
             setConf();
 
             startAnimation();
+        }
+    }
+
+    public void gerarDica(){
+        if(StaticValor.condicao == true){
+            gerarDicaCorreta();
+        }else{
+            gerarDicaFalsa();
         }
     }
 

@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour {
         AddGamePuzzles();
         Shuffle(gamePuzzles);
         gameGuesses = gamePuzzles.Count / 2;
-        speekE.gerarDicaFalsa();
+        speekE.gerarDica();
     }
 
         void GetButtons()
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour {
         int index = 0;
 
         speekE.tabuleiro = new int[looper];
-
+        Debug.Log(puzzles.Length);
         for (int i=0; i< looper; i++)
         {
             if (index == looper /2)
