@@ -87,6 +87,7 @@ public class SpeekE : MonoBehaviour{
             estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
         }else{
 
+            /*
             int sentimento = (int)Random.Range(1, 3);
 
             if(sentimento == 1){
@@ -97,7 +98,9 @@ public class SpeekE : MonoBehaviour{
                 estadoAtual = StaticValor.arquivos.pickUpEmocao("Vergonha");
             }else{
                 estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
-            }
+            }*/
+
+            estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
         }
         if(estadoAtual != null){
             StaticValor.arquivos.saveReacao(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
@@ -151,11 +154,14 @@ public class SpeekE : MonoBehaviour{
 
     private void falarDica(){
 
-        estadoAtual = StaticValor.arquivos.getFrases("2");
+        estadoAtual = StaticValor.arquivos.getFrases("3");
         Debug.Log("arquivo speek: "+estadoAtual.msg);
-        estadoAtual.msg = "Esperimente virar a carta";
+        //estadoAtual.msg = "Esperimente virar a carta";
 
-        estadoAtual.msg = estadoAtual.msg+ " " +dica1.ToString()+ " e a "+ dica2.ToString()+ ".";
+        //estadoAtual.msg = estadoAtual.msg+ " " +dica1.ToString()+ " e a "+ dica2.ToString()+ ".";
+        estadoAtual.msg = estadoAtual.msg.Replace("##", dica1.ToString());
+        estadoAtual.msg = estadoAtual.msg.Replace("$$", dica2.ToString());
+        Debug.Log("Teste de menssagem: "+estadoAtual.msg);
         StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
         Debug.Log(estadoAtual.msg);
 
