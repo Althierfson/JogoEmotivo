@@ -16,17 +16,30 @@ public class SpeekE : MonoBehaviour{
     public Text textBallon;            // Texto no balão
     private string animState;          // Guarda a animação atual
     Frase estadoAtual = new Frase();   // Objeto estado
-    public int[] tabuleiro;
-    public int dica1, dica2;
-    public bool agentInWork = false;
 
-    void Start(){
+    public int[] tabuleiro;            // Tabuleiro atual em jogo
+    public int dica1, dica2;           // As dicas do agente
+    public bool agentInWork = false;   // Se o agente esta falando
+
+    [SerializeField]
+    private bool talkControle = false; // Controle das partes intrudução, rounds, e finalização
+    [SerializeField]
+    private Text AgenteFrase;          // frase a serdita
+    [SerializeField]
+    private GameObject panelConverca; // Panel que sobre poem o jogo
+    [SerializeField]
+    private Button startGame;          // Botao para avança para o jogo
+
+    public void Start(){
         anim = GetComponent<Animator>();   // Pegando a Animator para controle das animações
         ballonImage.SetActive(false);      // esconde a imagem do balão
-        som = GetComponent<AudioSource>();
 
-        StaticValor.arquivos = new Arquivos(StaticValor.id);        // Criando novo arquivo com ID informado
-        print(StaticValor.arquivos.filePath);
+        if(StaticValor.round == 1){
+            // primeira partida
+            this.intruducao();
+        }else{
+            panelConverca.SetActive(false);
+        }
     }
 
     public void Speek(){
@@ -57,11 +70,11 @@ public class SpeekE : MonoBehaviour{
             Responsavel por ativar o balão com a menssagem do Agente.
         */
 
-        if(som.isPlaying == true){
+        if(this.som.isPlaying && !talkControle){
             ballonImage.SetActive(true);
             this.agentInWork = true;
         }
-        if(som.isPlaying == false){
+        if(this.som.isPlaying && !talkControle){
             ballonImage.SetActive(false);
             this.agentInWork = false;
         }
@@ -155,18 +168,68 @@ public class SpeekE : MonoBehaviour{
     private void falarDica(){
 
         estadoAtual = StaticValor.arquivos.getFrases("3");
-        Debug.Log("arquivo speek: "+estadoAtual.msg);
         //estadoAtual.msg = "Esperimente virar a carta";
 
-        //estadoAtual.msg = estadoAtual.msg+ " " +dica1.ToString()+ " e a "+ dica2.ToString()+ ".";
         estadoAtual.msg = estadoAtual.msg.Replace("##", dica1.ToString());
         estadoAtual.msg = estadoAtual.msg.Replace("$$", dica2.ToString());
-        Debug.Log("Teste de menssagem: "+estadoAtual.msg);
+
         StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
-        Debug.Log(estadoAtual.msg);
 
         setConf();
         Speek();
         //startAnimation();
+    }
+
+    public void intruducao(){
+
+        this.estadoAtual = StaticValor.arquivos.getFrases("13");
+        this.AgenteFrase.text = estadoAtual.msg;
+        Speek();
+        this.talkControle = true;
+    }
+
+    public void exibir(){
+        for(int j=0;j<this.tabuleiro.Length;j++){
+            Debug.Log("Tabuleiro: " + j + " n: " + this.tabuleiro[j]);
+        }
+    }
+
+    public void ruond(){
+        Debug.Log("Função chamada round");
+        switch(StaticValor.round){
+            case 2:
+                Debug.Log("Função chamada round");
+                this.panelConverca.SetActive(true);
+                this.startGame.GetComponentInChildren<Text>().text = "Vamos lá!";
+                this.estadoAtual = StaticValor.arquivos.getFrases("14");
+                this.AgenteFrase.text = estadoAtual.msg;
+                Speek();
+                this.talkControle = true;
+                break;
+            case 3:
+                Debug.Log("Função chamada round");
+                this.panelConverca.SetActive(true);
+                this.startGame.GetComponentInChildren<Text>().text = "Vamos começa!";
+                this.estadoAtual = StaticValor.arquivos.getFrases("15");
+                this.AgenteFrase.text = estadoAtual.msg;
+                Speek();
+                this.talkControle = true;
+                break;
+            default:
+                Debug.Log("Função chamada round");
+                this.panelConverca.SetActive(true);
+                this.startGame.GetComponentInChildren<Text>().text = "Ate mais!";
+                this.estadoAtual = StaticValor.arquivos.getFrases("16");
+                this.AgenteFrase.text = estadoAtual.msg;
+                Speek();
+                this.talkControle = true;
+                break;
+        }
+    }
+
+    public void startGameButtom(){
+        this.panelConverca.SetActive(false);
+        this.talkControle = false;
+        this.gerarDica();
     }
 }

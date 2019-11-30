@@ -38,10 +38,12 @@ public class Arquivos{
         this.interacao = 1;
         Debug.Log(filePath);
         // C:/Users/007br/Documents/TCC/UnityEmotionalAgent/EmotionalAgent/Assets/Scripts
-        using(StreamWriter file = File.CreateText(filePath + "/individo" + id + ".txt")){
-                cabecalho = "Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
-                file.WriteLine(cabecalho);
-            }
+        if(!System.IO.File.Exists(filePath + "/Log/individuo" + id + "" + ".txt")){
+            using(StreamWriter file = File.CreateText(filePath + "/Log/individuo" + id + ".txt")){
+                    cabecalho = "Round;Condição;Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
+                    file.WriteLine(cabecalho);
+                }
+        }
         return;
     }
 
@@ -91,8 +93,9 @@ public class Arquivos{
         /*
             Função responsavel por receber os dados e gravalos no arquivo de saida
         */
-        using(var file = new StreamWriter(filePath + "/individo" + id + ".txt", true)){
-                file.WriteLine(this.interacao.ToString()+";"+this.DicaAgente+";"+this.CódigoDica+";"+this.EmoçãoDica+";"+
+        using(var file = new StreamWriter(filePath + "/Log/individuo" + id + ".txt", true)){
+                file.WriteLine(StaticValor.round+";"+StaticValor.condicao.ToString()+";"+this.interacao+";"+
+                                this.DicaAgente+";"+this.CódigoDica+";"+this.EmoçãoDica+";"+
                                 this.EscolhaJogador+";"+this.EraAdoAgente.ToString()+";"+
                                 this.EmoçãoClasse+";"+this.Codigo+";"+this.Frase+";");
             }

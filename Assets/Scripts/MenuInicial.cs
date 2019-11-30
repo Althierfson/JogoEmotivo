@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MenuInicial : MonoBehaviour
 {
     [SerializeField]
-    InputField id;
+    InputField id = null;
 
     void Start()
     {

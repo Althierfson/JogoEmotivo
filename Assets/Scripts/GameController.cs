@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
+ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -40,12 +41,15 @@ public class GameController : MonoBehaviour {
 
     private void Start()
     {
+        Debug.Log("Round Atual: " + StaticValor.round);
+        StaticValor.arquivos = new Arquivos(StaticValor.id);
+        speekE.Start();
         GetButtons();
         AddListeneers();
         AddGamePuzzles();
         Shuffle(gamePuzzles);
         gameGuesses = gamePuzzles.Count / 2;
-        speekE.gerarDica();
+        //speekE.gerarDica();
     }
 
         void GetButtons()
@@ -70,7 +74,7 @@ public class GameController : MonoBehaviour {
         int index = 0;
 
         speekE.tabuleiro = new int[looper];
-        Debug.Log(puzzles.Length);
+        
         for (int i=0; i< looper; i++)
         {
             if (index == looper /2)
@@ -119,6 +123,8 @@ public class GameController : MonoBehaviour {
 
                 if(firstGuessPuzzle == secondGuessPuzzle){
                     Debug.Log("Cartas corretas");
+                    speekE.tabuleiro[firstGuessIndex] = -1;
+                    speekE.tabuleiro[secondGuessIndex] = -1;
                     trataInteracao();
                 } else {
                     Debug.Log("Tente outra vez");
@@ -161,7 +167,7 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(.5f);
 
         firstGuess = secondGuess = false;
-
+        this.speekE.exibir();
     }
 
     void CheckIfTheGameIsFinished()
@@ -172,9 +178,25 @@ public class GameController : MonoBehaviour {
         {
             Debug.Log("Fim do Jogo");
             Debug.Log("Foram " + countGuesses + " tentativas para vencer");
-            UnityEngine.SceneManagement.SceneManager.LoadScene("posJogo");
+            StartCoroutine(waitFor(10));
+
+            StaticValor.round++;
+            this.speekE.ruond();
+            Debug.Log("Up Rund: " + StaticValor.round);
 
         }
+    }
+
+    public void resetarCena(){
+        if(StaticValor.round > 1 && StaticValor.round <= 3){
+            SceneManager.LoadScene("jogo1");
+        }else if(StaticValor.round > 3){
+            UnityEngine.SceneManagement.SceneManager.LoadScene("posJogo");
+        }
+    }
+
+    IEnumerator waitFor(float sec){
+        yield return new WaitForSeconds(sec);
     }
 
     void Shuffle(List<Sprite> list) // funcao randomica
@@ -193,9 +215,6 @@ public class GameController : MonoBehaviour {
 
     void trataInteracao(){
         // Função responcavel por trata o acerto de cartas
-
-        speekE.tabuleiro[firstGuessIndex] = -1;
-        speekE.tabuleiro[secondGuessIndex] = -1;
 
         if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
             if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
