@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour {
     {
         Debug.Log("Round Atual: " + StaticValor.round);
         StaticValor.arquivos = new Arquivos(StaticValor.id);
-        speekE.Start();
+        chekarCondicoes();
         GetButtons();
         AddListeneers();
         AddGamePuzzles();
@@ -52,7 +52,22 @@ public class GameController : MonoBehaviour {
         //speekE.gerarDica();
     }
 
-        void GetButtons()
+    void chekarCondicoes(){
+
+        if(StaticValor.condicaoAgente){
+            Debug.Log("condição Agente: verdadeira");
+            speekE.Start();
+        }else{
+            Debug.Log("condição Agente: Falsa");
+            GameObject agente = GameObject.FindGameObjectWithTag("Agent");
+            agente.GetComponent<Renderer>().material.color = Color.clear;
+            GameObject speek = GameObject.FindGameObjectWithTag("Speek");
+            Destroy(speek);
+            speekE.Start();
+        }
+    }
+
+    void GetButtons()
     {
             GameObject[] objects = GameObject.FindGameObjectsWithTag("PuzzleButton");
 
@@ -216,24 +231,26 @@ public class GameController : MonoBehaviour {
     void trataInteracao(){
         // Função responcavel por trata o acerto de cartas
 
-        if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
-            if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
-                blockInteracao();
-                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
-                speekE.reacao(true);
-                openInteracao();
-                Debug.Log("GameController: Usuario escolheo as cartas do Agente");
+        if(StaticValor.condicaoAgente){
+            if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
+                if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
+                    blockInteracao();
+                    StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
+                    speekE.reacao(true);
+                    openInteracao();
+                    Debug.Log("GameController: Usuario escolheo as cartas do Agente");
+                }else{
+                    blockInteracao();
+                    StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
+                    speekE.reacao(false);
+                    openInteracao();
+                    Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
+                }
             }else{
-                blockInteracao();
                 StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
                 speekE.reacao(false);
-                openInteracao();
                 Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
             }
-        }else{
-            StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
-            speekE.reacao(false);
-            Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
         }
     }
 

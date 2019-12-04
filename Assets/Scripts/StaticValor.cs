@@ -6,8 +6,10 @@ public class StaticValor : MonoBehaviour {
     
     public static string id = "-1";
     public static bool condicao = true;
+    public static bool condicaoAnim = true;
+    public static bool condicaoAgente = true;
 
-    public static int round = 3;
+    public static int round = 1;
 
     public static Arquivos arquivos;
 }

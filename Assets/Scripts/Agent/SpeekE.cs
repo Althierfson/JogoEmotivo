@@ -34,9 +34,16 @@ public class SpeekE : MonoBehaviour{
         anim = GetComponent<Animator>();   // Pegando a Animator para controle das animações
         ballonImage.SetActive(false);      // esconde a imagem do balão
 
+        Debug.Log(Speaker.Voices);
+
+        if(!StaticValor.condicaoAnim){
+            Debug.Log("condição anim: falsa");
+            anim.enabled = false;
+        }
+
         if(StaticValor.round == 1){
             // primeira partida
-            this.intruducao();
+            intruducao();
         }else{
             panelConverca.SetActive(false);
         }
@@ -45,8 +52,11 @@ public class SpeekE : MonoBehaviour{
     public void Speek(){
         // Quando essa função é chamada o TextToSpeech falará a frase contidade em estadoAtual.msg
 
-        //Speaker.Speak(text.text, null, Speaker.VoiceForName("Microsoft Daniel"));
-        Speaker.Speak(estadoAtual.msg, som, Speaker.VoiceForName("Microsoft Daniel"));
+        if(StaticValor.condicaoAgente){
+            //Speaker.Speak(text.text, null, Speaker.VoiceForName("Microsoft Daniel"));
+            Speaker.Speak(estadoAtual.msg, this.som, Speaker.VoiceForName("Microsoft Maria Desktop (pt-BR, FEMALE)"));
+            //Speaker.SpeakNative(estadoAtual.msg,  Speaker.VoiceForCulture("br"));
+        }
     }
 
     void Update(){
@@ -56,13 +66,17 @@ public class SpeekE : MonoBehaviour{
     }
 
     public void setPassivo(){
-        anim.SetBool(animState, false);
-        anim.SetBool("Passivo_1", true);
+        if(StaticValor.condicaoAnim){
+            anim.SetBool(animState, false);
+            anim.SetBool("Passivo_1", true);
+        }
     }
 
     public void startAnimation(){
-        anim.SetBool(animState, true);
-        anim.SetBool("Passivo_1", false);
+        if(StaticValor.condicaoAnim){
+            anim.SetBool(animState, true);
+            anim.SetBool("Passivo_1", false);
+        }
     }
 
     private void animCtr(){
@@ -70,11 +84,11 @@ public class SpeekE : MonoBehaviour{
             Responsavel por ativar o balão com a menssagem do Agente.
         */
 
-        if(this.som.isPlaying && !talkControle){
+        if(this.som.isPlaying){
             ballonImage.SetActive(true);
             this.agentInWork = true;
         }
-        if(this.som.isPlaying && !talkControle){
+        if(this.som.isPlaying){
             ballonImage.SetActive(false);
             this.agentInWork = false;
         }

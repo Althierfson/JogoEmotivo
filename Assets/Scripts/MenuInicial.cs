@@ -34,4 +34,20 @@ public class MenuInicial : MonoBehaviour
             Debug.Log("Setado para true:" + StaticValor.condicao.ToString());
         }
     }
+
+    public void onChangeCondicaoAnim(bool valor){
+        if(StaticValor.condicaoAnim == true){
+            StaticValor.condicaoAnim = false;
+        }else{
+            StaticValor.condicaoAnim = true;
+        }
+    }
+
+    public void onChangeCondicaoAgente(bool valor){
+        if(StaticValor.condicaoAnim == true){
+            StaticValor.condicaoAgente = false;
+        }else{
+            StaticValor.condicaoAgente = true;
+        }
+    }
 }

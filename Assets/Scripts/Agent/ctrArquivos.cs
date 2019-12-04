@@ -14,14 +14,14 @@ public class Arquivos{
 
     // Informações de gravação
 
-    private string DicaAgente;
-    private string CódigoDica;
-    private string EmoçãoDica;
-    private string EscolhaJogador;
-    private bool EraAdoAgente;
-    private string EmoçãoClasse;
-    private string Codigo;
-    private string Frase;
+    private string DicaAgente = "n/s";
+    private string CódigoDica = "n/s";
+    private string EmoçãoDica = "n/s";
+    private string EscolhaJogador = "n/s";
+    private bool EraAdoAgente = false;
+    private string EmoçãoClasse = "n/s";
+    private string Codigo = "n/s";
+    private string Frase = "n/s";
 
     public Arquivos(string id){
         frases = new List<Frase>();
