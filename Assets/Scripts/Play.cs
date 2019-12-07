@@ -7,7 +7,7 @@ public class Play : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        StaticValor.arquivos = new Arquivos(StaticValor.id);
     }
 
     // Update is called once per frame

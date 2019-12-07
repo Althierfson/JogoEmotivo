@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour {
     private bool firstGuess, secondGuess;
     private int countGuesses;
     private int countCorrectGuesses;
-    private int gameGuesses;
+    public int gameGuesses;
 
     private int firstGuessIndex, secondGuessIndex;
 
@@ -41,30 +41,25 @@ public class GameController : MonoBehaviour {
 
     private void Start()
     {
-        Debug.Log("Round Atual: " + StaticValor.round);
-        StaticValor.arquivos = new Arquivos(StaticValor.id);
-        chekarCondicoes();
         GetButtons();
         AddListeneers();
         AddGamePuzzles();
         Shuffle(gamePuzzles);
         gameGuesses = gamePuzzles.Count / 2;
+        chekarCondicoes();
         //speekE.gerarDica();
     }
 
     void chekarCondicoes(){
 
         if(StaticValor.condicaoAgente){
-            Debug.Log("condição Agente: verdadeira");
-            speekE.Start();
+            //speekE.Start();
         }else{
-            Debug.Log("condição Agente: Falsa");
             GameObject agente = GameObject.FindGameObjectWithTag("Agent");
             agente.GetComponent<Renderer>().material.color = Color.clear;
-            GameObject speek = GameObject.FindGameObjectWithTag("Speek");
-            Destroy(speek);
-            speekE.Start();
+            //speekE.Start();
         }
+        speekE.configuraçaoDeRounds();
     }
 
     void GetButtons()
@@ -136,20 +131,21 @@ public class GameController : MonoBehaviour {
 
                 texts[secondGuessIndex].enabled = false;
 
+                speekE.ballonImage.SetActive(false);
+
                 if(firstGuessPuzzle == secondGuessPuzzle){
-                    Debug.Log("Cartas corretas");
                     speekE.tabuleiro[firstGuessIndex] = -1;
                     speekE.tabuleiro[secondGuessIndex] = -1;
-                    trataInteracao();
-                } else {
-                    Debug.Log("Tente outra vez");
-                    trataInteracao();
+                    //trataInteracao();
                 }
 
                 countGuesses++;
 
                 StartCoroutine(CheckIfThePuzzlesMatch());
 
+                if(countCorrectGuesses != gameGuesses){
+                    trataInteracao();
+                }
             }
         }
     }
@@ -182,7 +178,7 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(.5f);
 
         firstGuess = secondGuess = false;
-        this.speekE.exibir();
+        //this.speekE.exibir();
     }
 
     void CheckIfTheGameIsFinished()
@@ -193,25 +189,21 @@ public class GameController : MonoBehaviour {
         {
             Debug.Log("Fim do Jogo");
             Debug.Log("Foram " + countGuesses + " tentativas para vencer");
-            StartCoroutine(waitFor(10));
 
             StaticValor.round++;
             this.speekE.ruond();
-            Debug.Log("Up Rund: " + StaticValor.round);
-
+            //speekE.setEndGame(true);
         }
     }
 
     public void resetarCena(){
-        if(StaticValor.round > 1 && StaticValor.round <= 3){
-            SceneManager.LoadScene("jogo1");
-        }else if(StaticValor.round > 3){
-            UnityEngine.SceneManagement.SceneManager.LoadScene("posJogo");
+        if(!speekE.agentInWork){
+            if(StaticValor.round > 1 && StaticValor.round <= 3){
+                SceneManager.LoadScene("jogo1");
+            }else if(StaticValor.round > 3){
+                UnityEngine.SceneManagement.SceneManager.LoadScene("posJogo");
+            }
         }
-    }
-
-    IEnumerator waitFor(float sec){
-        yield return new WaitForSeconds(sec);
     }
 
     void Shuffle(List<Sprite> list) // funcao randomica
@@ -231,26 +223,21 @@ public class GameController : MonoBehaviour {
     void trataInteracao(){
         // Função responcavel por trata o acerto de cartas
 
-        if(StaticValor.condicaoAgente){
-            if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
-                if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
-                    blockInteracao();
-                    StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
-                    speekE.reacao(true);
-                    openInteracao();
-                    Debug.Log("GameController: Usuario escolheo as cartas do Agente");
-                }else{
-                    blockInteracao();
-                    StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
-                    speekE.reacao(false);
-                    openInteracao();
-                    Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
-                }
+        if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
+            if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
+                blockInteracao();
+                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
+                speekE.reacao(true, countCorrectGuesses);
+                openInteracao();
             }else{
+                blockInteracao();
                 StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
-                speekE.reacao(false);
-                Debug.Log("GameController: Usuario não escolheo as cartas do Agente");
+                speekE.reacao(false, countCorrectGuesses);
+                openInteracao();
             }
+        }else{
+            StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
+            speekE.reacao(false, countCorrectGuesses);
         }
     }
 

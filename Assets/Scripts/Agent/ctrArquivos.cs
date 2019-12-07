@@ -40,7 +40,7 @@ public class Arquivos{
         // C:/Users/007br/Documents/TCC/UnityEmotionalAgent/EmotionalAgent/Assets/Scripts
         if(!System.IO.File.Exists(filePath + "/Log/individuo" + id + "" + ".txt")){
             using(StreamWriter file = File.CreateText(filePath + "/Log/individuo" + id + ".txt")){
-                    cabecalho = "Round;Condição;Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
+                    cabecalho = "Round;CondicaoDica;CondicaoAnim;condicaoAgente;Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
                     file.WriteLine(cabecalho);
                 }
         }
@@ -94,7 +94,8 @@ public class Arquivos{
             Função responsavel por receber os dados e gravalos no arquivo de saida
         */
         using(var file = new StreamWriter(filePath + "/Log/individuo" + id + ".txt", true)){
-                file.WriteLine(StaticValor.round+";"+StaticValor.condicao.ToString()+";"+this.interacao+";"+
+                file.WriteLine(StaticValor.round+";"+StaticValor.condicao.ToString()+";"+StaticValor.condicaoAnim.ToString()+";"+
+                                StaticValor.condicaoAgente.ToString()+";"+this.interacao+";"+
                                 this.DicaAgente+";"+this.CódigoDica+";"+this.EmoçãoDica+";"+
                                 this.EscolhaJogador+";"+this.EraAdoAgente.ToString()+";"+
                                 this.EmoçãoClasse+";"+this.Codigo+";"+this.Frase+";");
@@ -110,8 +111,9 @@ public class Arquivos{
 
         foreach(Frase frase in frases){
             if(frase.codigo.Equals(cod)){
-                f = frase;
-                Debug.Log("arquivo CTR: "+f.msg);
+                f.codigo = frase.codigo;
+                f.emocao = frase.emocao;
+                f.msg = frase.msg;
                 return f;
             }
         }
@@ -132,7 +134,12 @@ public class Arquivos{
         foreach (Frase item in frases){
             if(item.emocao.Equals(sentimento)){
                 if(escolha <= 0){
-                    f = item;
+                    f.codigo = item.codigo;
+                    f.emocao = item.emocao;
+                    f.msg = item.msg;
+                    if(sentimento.Equals("Dica")){
+                        f.emocao = "Talk";
+                    }
                     return f;
                 }else{
                     escolha--;

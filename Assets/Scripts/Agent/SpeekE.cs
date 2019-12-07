@@ -20,32 +20,38 @@ public class SpeekE : MonoBehaviour{
     public int[] tabuleiro;            // Tabuleiro atual em jogo
     public int dica1, dica2;           // As dicas do agente
     public bool agentInWork = false;   // Se o agente esta falando
+    private bool emReacao;
+    private bool fimloop;
+    private bool endGame;
+    private bool podeFinalizar;
+    private int escohasCorretas;
 
     [SerializeField]
     private bool talkControle = false; // Controle das partes intrudução, rounds, e finalização
     [SerializeField]
     private Text AgenteFrase;          // frase a serdita
     [SerializeField]
-    private GameObject panelConverca; // Panel que sobre poem o jogo
+    private GameObject panelConverca;  // Panel que sobre poem o jogo
     [SerializeField]
     private Button startGame;          // Botao para avança para o jogo
 
     public void Start(){
         anim = GetComponent<Animator>();   // Pegando a Animator para controle das animações
         ballonImage.SetActive(false);      // esconde a imagem do balão
-
-        Debug.Log(Speaker.Voices);
+        som = GetComponent<AudioSource>();
 
         if(!StaticValor.condicaoAnim){
-            Debug.Log("condição anim: falsa");
             anim.enabled = false;
         }
+    }
 
+    public void configuraçaoDeRounds(){
         if(StaticValor.round == 1){
             // primeira partida
             intruducao();
         }else{
             panelConverca.SetActive(false);
+            this.gerarDica();
         }
     }
 
@@ -54,8 +60,8 @@ public class SpeekE : MonoBehaviour{
 
         if(StaticValor.condicaoAgente){
             //Speaker.Speak(text.text, null, Speaker.VoiceForName("Microsoft Daniel"));
-            Speaker.Speak(estadoAtual.msg, this.som, Speaker.VoiceForName("Microsoft Maria Desktop (pt-BR, FEMALE)"));
-            //Speaker.SpeakNative(estadoAtual.msg,  Speaker.VoiceForCulture("br"));
+            Speaker.Speak(estadoAtual.msg, this.som, Speaker.VoiceForName("Microsoft Daniel"));
+            //Speaker.SpeakNative(estadoAtual.msg);
         }
     }
 
@@ -63,6 +69,10 @@ public class SpeekE : MonoBehaviour{
         
         // Controle da animação
         animCtr();  // Ativando balão de animação
+
+        controleloop();
+
+        controleDone();
     }
 
     public void setPassivo(){
@@ -85,12 +95,39 @@ public class SpeekE : MonoBehaviour{
         */
 
         if(this.som.isPlaying){
-            ballonImage.SetActive(true);
+            //ballonImage.SetActive(true);
             this.agentInWork = true;
         }
-        if(this.som.isPlaying){
-            ballonImage.SetActive(false);
+        if(!this.som.isPlaying){
+            //ballonImage.SetActive(false);
             this.agentInWork = false;
+        }
+    }
+
+    void controleDone(){
+        if(this.som.isPlaying && this.endGame){
+            this.podeFinalizar = true;
+        }
+        if(!this.som.isPlaying && this.podeFinalizar){
+            this.podeFinalizar = false;
+            this.endGame = false;
+            ruond();
+        }
+    }
+
+
+    void controleloop(){
+
+        if(!this.endGame){
+            if(this.emReacao){
+                if(this.som.isPlaying){
+                    this.fimloop = true;
+                }
+                if(!this.som.isPlaying && this.fimloop){
+                    this.emReacao = this.fimloop = false;
+                    this.gerarDica();
+                }
+            }
         }
     }
 
@@ -99,50 +136,61 @@ public class SpeekE : MonoBehaviour{
             Essa função é responsavel por receber um objeto frase e setar a frase no balão, na voz do robo e definir a animação
         */
         
-        Debug.Log(estadoAtual.msg);
         textBallon.text = estadoAtual.msg;
         animState = estadoAtual.emocao;
         
     }
 
-    public void reacao(bool rec){
+    public void reacao(bool rec, int escolhas){
         /*
             Função receber um sentimento e escolhe aleatoriamente uma frase no banco de frases com o sentimento correspondente
         */
-
-        if (rec == true){
-            estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
-        }else{
-
-            /*
-            int sentimento = (int)Random.Range(1, 3);
-
-            if(sentimento == 1){
-                estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
-            }else if(sentimento == 2){
-                estadoAtual = StaticValor.arquivos.pickUpEmocao("Bravo");
-            }else if(sentimento == 3){
-                estadoAtual = StaticValor.arquivos.pickUpEmocao("Vergonha");
+        this.escohasCorretas = escolhas;
+        Debug.Log(this.escohasCorretas);
+        if(escolhas <= 4){
+            this.emReacao = true;
+            this.ballonImage.SetActive(true);
+            if (rec == true){
+                estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
             }else{
+
+                /*
+                int sentimento = (int)Random.Range(1, 3);
+
+                if(sentimento == 1){
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
+                }else if(sentimento == 2){
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Bravo");
+                }else if(sentimento == 3){
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Vergonha");
+                }else{
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
+                }*/
+
                 estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
-            }*/
+            }
+            if(estadoAtual != null){
+                StaticValor.arquivos.saveReacao(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
+                StaticValor.arquivos.registra();
+                setConf();
 
-            estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
-        }
-        if(estadoAtual != null){
-            StaticValor.arquivos.saveReacao(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
-            StaticValor.arquivos.registra();
-            setConf();
-
-            startAnimation();
+                if(StaticValor.condicaoAnim){
+                    startAnimation();
+                }else{
+                    this.Speek();
+                }
+            }
         }
     }
 
     public void gerarDica(){
-        if(StaticValor.condicao == true){
-            gerarDicaCorreta();
-        }else{
-            gerarDicaFalsa();
+        if(this.escohasCorretas <= 3){
+            this.ballonImage.SetActive(true);
+            if(StaticValor.condicao == true){
+                gerarDicaCorreta();
+            }else{
+                gerarDicaFalsa();
+            }
         }
     }
 
@@ -172,23 +220,25 @@ public class SpeekE : MonoBehaviour{
         int escolha2 = escolha1;
         while(this.tabuleiro[escolha1] == this.tabuleiro[escolha2] || this.tabuleiro[escolha1] == -1 || this.tabuleiro[escolha2] == -1){
             escolha2 = (int)Random.Range(1, tabuleiro.Length);
+            escolha1 = (int)Random.Range(1, tabuleiro.Length);
         }
 
-        dica1 = escolha1;
-        dica2 = escolha2;
+        this.dica1 = escolha1;
+        this.dica2 = escolha2;
         falarDica();
     }
 
     private void falarDica(){
 
-        estadoAtual = StaticValor.arquivos.getFrases("3");
-        //estadoAtual.msg = "Esperimente virar a carta";
-
-        estadoAtual.msg = estadoAtual.msg.Replace("##", dica1.ToString());
-        estadoAtual.msg = estadoAtual.msg.Replace("$$", dica2.ToString());
+        estadoAtual = StaticValor.arquivos.pickUpEmocao("Dica");
+        if(estadoAtual == null){
+            estadoAtual = StaticValor.arquivos.getFrases("3");
+        }
+        estadoAtual.msg = estadoAtual.msg.Replace("##", this.dica1.ToString());
+        estadoAtual.msg = estadoAtual.msg.Replace("$$", this.dica2.ToString());
 
         StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
-
+        Debug.Log(estadoAtual.msg);
         setConf();
         Speek();
         //startAnimation();
@@ -196,7 +246,12 @@ public class SpeekE : MonoBehaviour{
 
     public void intruducao(){
 
-        this.estadoAtual = StaticValor.arquivos.getFrases("13");
+        if(StaticValor.condicaoAgente){
+            this.estadoAtual = StaticValor.arquivos.getFrases("13");
+        }else{
+            this.estadoAtual = StaticValor.arquivos.getFrases("17");
+        }
+
         this.AgenteFrase.text = estadoAtual.msg;
         Speek();
         this.talkControle = true;
@@ -208,32 +263,45 @@ public class SpeekE : MonoBehaviour{
         }
     }
 
+    public void setEndGame(bool valor){
+        this.endGame = valor;
+    }
+
     public void ruond(){
-        Debug.Log("Função chamada round");
+        this.ballonImage.SetActive(false);
         switch(StaticValor.round){
             case 2:
-                Debug.Log("Função chamada round");
                 this.panelConverca.SetActive(true);
                 this.startGame.GetComponentInChildren<Text>().text = "Vamos lá!";
-                this.estadoAtual = StaticValor.arquivos.getFrases("14");
+                if(StaticValor.condicaoAgente){
+                    this.estadoAtual = StaticValor.arquivos.getFrases("14");
+                }else{
+                    this.estadoAtual = StaticValor.arquivos.getFrases("18");
+                }
                 this.AgenteFrase.text = estadoAtual.msg;
                 Speek();
                 this.talkControle = true;
                 break;
             case 3:
-                Debug.Log("Função chamada round");
                 this.panelConverca.SetActive(true);
                 this.startGame.GetComponentInChildren<Text>().text = "Vamos começa!";
-                this.estadoAtual = StaticValor.arquivos.getFrases("15");
+                if(StaticValor.condicaoAgente){
+                    this.estadoAtual = StaticValor.arquivos.getFrases("15");
+                }else{
+                    this.estadoAtual = StaticValor.arquivos.getFrases("19");
+                }
                 this.AgenteFrase.text = estadoAtual.msg;
                 Speek();
                 this.talkControle = true;
                 break;
             default:
-                Debug.Log("Função chamada round");
                 this.panelConverca.SetActive(true);
                 this.startGame.GetComponentInChildren<Text>().text = "Ate mais!";
-                this.estadoAtual = StaticValor.arquivos.getFrases("16");
+                if(StaticValor.condicaoAgente){
+                    this.estadoAtual = StaticValor.arquivos.getFrases("16");
+                }else{
+                    this.estadoAtual = StaticValor.arquivos.getFrases("20");
+                }
                 this.AgenteFrase.text = estadoAtual.msg;
                 Speek();
                 this.talkControle = true;
@@ -242,8 +310,12 @@ public class SpeekE : MonoBehaviour{
     }
 
     public void startGameButtom(){
-        this.panelConverca.SetActive(false);
-        this.talkControle = false;
-        this.gerarDica();
+        if(!this.agentInWork){
+            this.panelConverca.SetActive(false);
+            this.talkControle = false;
+            if(StaticValor.round == 1){
+                this.gerarDica();
+            }
+        }
     }
 }
