@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Crosstales.RTVoice;
+using Crosstales.RTVoice.Model;
 
 public class MenuInicial : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class MenuInicial : MonoBehaviour
 
     void Start()
     {
-
+        Speaker.Speak("ola mundo", null, Speaker.VoiceForName("Microsoft Daniel"));
     }
 
     // Update is called once per frame
@@ -28,10 +30,8 @@ public class MenuInicial : MonoBehaviour
     public void onChangeCondicao(bool valor){
         if(StaticValor.condicao == true){
             StaticValor.condicao = valor;
-            Debug.Log("Setado para false:" + StaticValor.condicao.ToString());
         }else{
             StaticValor.condicao = !valor;
-            Debug.Log("Setado para true:" + StaticValor.condicao.ToString());
         }
     }
 

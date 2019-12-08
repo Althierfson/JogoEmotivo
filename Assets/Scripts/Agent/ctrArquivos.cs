@@ -22,6 +22,7 @@ public class Arquivos{
     private string EmoçãoClasse = "n/s";
     private string Codigo = "n/s";
     private string Frase = "n/s";
+    private string cartasCombinaram = "n/s";
 
     public Arquivos(string id){
         frases = new List<Frase>();
@@ -40,7 +41,7 @@ public class Arquivos{
         // C:/Users/007br/Documents/TCC/UnityEmotionalAgent/EmotionalAgent/Assets/Scripts
         if(!System.IO.File.Exists(filePath + "/Log/individuo" + id + "" + ".txt")){
             using(StreamWriter file = File.CreateText(filePath + "/Log/individuo" + id + ".txt")){
-                    cabecalho = "Round;CondicaoDica;CondicaoAnim;condicaoAgente;Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;EmocaoClasse;Codigo;Frase";
+                    cabecalho = "Round;CondicaoDica;CondicaoAnim;condicaoAgente;Interacao;DicaAgente;CodigoDica;EmoçaoDica;EscolhaJogador;EraAdoAgente;Metch;EmocaoClasse;Codigo;Frase";
                     file.WriteLine(cabecalho);
                 }
         }
@@ -78,8 +79,8 @@ public class Arquivos{
         this.EmoçãoDica = emocao;
     }
 
-    public void saveEscolha(string escolha, bool doAgente){
-        this.EscolhaJogador = escolha;
+    public void saveEscolha(int escolha1, int escolha2, bool doAgente){
+        this.EscolhaJogador = escolha1.ToString()+"|"+escolha2.ToString();
         this.EraAdoAgente = doAgente;
     }
 
@@ -87,6 +88,10 @@ public class Arquivos{
         this.EmoçãoClasse = emocao;
         this.Codigo = cod;
         this.Frase = msg;
+    }
+
+    public void saveMetch(bool mecth){
+        this.cartasCombinaram = mecth.ToString();
     }
 
     public void registra(){
@@ -97,7 +102,7 @@ public class Arquivos{
                 file.WriteLine(StaticValor.round+";"+StaticValor.condicao.ToString()+";"+StaticValor.condicaoAnim.ToString()+";"+
                                 StaticValor.condicaoAgente.ToString()+";"+this.interacao+";"+
                                 this.DicaAgente+";"+this.CódigoDica+";"+this.EmoçãoDica+";"+
-                                this.EscolhaJogador+";"+this.EraAdoAgente.ToString()+";"+
+                                this.EscolhaJogador+";"+this.EraAdoAgente.ToString()+";"+this.cartasCombinaram+";"+
                                 this.EmoçãoClasse+";"+this.Codigo+";"+this.Frase+";");
             }
         interacao++;

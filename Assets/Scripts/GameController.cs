@@ -57,6 +57,7 @@ public class GameController : MonoBehaviour {
         }else{
             GameObject agente = GameObject.FindGameObjectWithTag("Agent");
             agente.GetComponent<Renderer>().material.color = Color.clear;
+            Destroy(GameObject.FindGameObjectWithTag("balaoPanel"));
             //speekE.Start();
         }
         speekE.configuraçaoDeRounds();
@@ -136,7 +137,9 @@ public class GameController : MonoBehaviour {
                 if(firstGuessPuzzle == secondGuessPuzzle){
                     speekE.tabuleiro[firstGuessIndex] = -1;
                     speekE.tabuleiro[secondGuessIndex] = -1;
-                    //trataInteracao();
+                    StaticValor.arquivos.saveMetch(true);
+                }else{
+                    StaticValor.arquivos.saveMetch(false);
                 }
 
                 countGuesses++;
@@ -185,6 +188,8 @@ public class GameController : MonoBehaviour {
     {
         countCorrectGuesses++;
 
+        speekE.setEscolhasCorretas(countCorrectGuesses);
+
         if (countCorrectGuesses == gameGuesses)
         {
             Debug.Log("Fim do Jogo");
@@ -226,17 +231,17 @@ public class GameController : MonoBehaviour {
         if(firstGuessIndex+1 == speekE.dica1 || firstGuessIndex+1 == speekE.dica2){
             if(secondGuessIndex+1 == speekE.dica1 || secondGuessIndex+1 == speekE.dica2){
                 blockInteracao();
-                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), true);
+                StaticValor.arquivos.saveEscolha(firstGuessIndex+1, secondGuessIndex+1, true);
                 speekE.reacao(true, countCorrectGuesses);
                 openInteracao();
             }else{
                 blockInteracao();
-                StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
+                StaticValor.arquivos.saveEscolha(firstGuessIndex+1, secondGuessIndex+1, false);
                 speekE.reacao(false, countCorrectGuesses);
                 openInteracao();
             }
         }else{
-            StaticValor.arquivos.saveEscolha(firstGuessIndex.ToString()+"|"+secondGuessIndex.ToString(), false);
+            StaticValor.arquivos.saveEscolha(firstGuessIndex+1, secondGuessIndex+1, false);
             speekE.reacao(false, countCorrectGuesses);
         }
     }

@@ -7,6 +7,7 @@ TagManager:
   - PuzzleButton
   - Agent
   - Speek
+  - balaoPanel
   layers:
   - Default
   - TransparentFX

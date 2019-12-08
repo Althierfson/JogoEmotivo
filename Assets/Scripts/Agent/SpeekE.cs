@@ -145,11 +145,13 @@ public class SpeekE : MonoBehaviour{
         /*
             Função receber um sentimento e escolhe aleatoriamente uma frase no banco de frases com o sentimento correspondente
         */
-        this.escohasCorretas = escolhas;
-        Debug.Log(this.escohasCorretas);
+        //this.escohasCorretas = escolhas;
+        Debug.Log("speek - reacao: " + this.escohasCorretas);
         if(escolhas <= 4){
             this.emReacao = true;
-            this.ballonImage.SetActive(true);
+            if(StaticValor.condicaoAgente){
+                this.ballonImage.SetActive(true);
+            }
             if (rec == true){
                 estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
             }else{
@@ -180,51 +182,60 @@ public class SpeekE : MonoBehaviour{
                     this.Speek();
                 }
             }
+        }else{
+            StaticValor.arquivos.saveReacao("n/s", "n/s", "n/s");
+            StaticValor.arquivos.registra();
         }
     }
 
+    public void setEscolhasCorretas(int valor){
+        this.escohasCorretas = valor;
+    }
+
     public void gerarDica(){
-        if(this.escohasCorretas <= 3){
-            this.ballonImage.SetActive(true);
+        exibir();
+        Debug.Log("speek - geraDica: " + this.escohasCorretas);
+        if(this.escohasCorretas <= 4){
+            if(StaticValor.condicaoAgente){
+                this.ballonImage.SetActive(true);
+            }
             if(StaticValor.condicao == true){
                 gerarDicaCorreta();
             }else{
                 gerarDicaFalsa();
             }
+        }else{
+            StaticValor.arquivos.saveDica("n/s", "n/s", "n/s");
         }
     }
 
     public void gerarDicaCorreta(){
-        int dica1, dica2;
+        int dica1;
+        this.exibir();
+        do{
+            dica1 = (int)Random.Range(0, this.tabuleiro.Length);
+        }while(this.tabuleiro[dica1] == -1);
 
         for(int i=0;i<tabuleiro.Length;i++){
-            dica1 = tabuleiro[i];
-
-            if(dica1 != -1){
-                for(int j=i+1;j<tabuleiro.Length;j++){
-                    dica2 = tabuleiro[j];
-
-                    if(dica1 == dica2){
-                        this.dica1 = i+1;
-                        this.dica2 = j+1;
-                        falarDica();
-                        return;
-                    }
-                }
+            if(this.tabuleiro[dica1] == this.tabuleiro[i] && dica1 != i){
+                this.dica2 = i+1;
+                this.dica1 = dica1+1;
+                Debug.Log(dica1+":"+i);
+                falarDica();
+                return;
             }
         }
     }
 
     public void gerarDicaFalsa(){
-        int escolha1 = (int)Random.Range(1, tabuleiro.Length);
-        int escolha2 = escolha1;
-        while(this.tabuleiro[escolha1] == this.tabuleiro[escolha2] || this.tabuleiro[escolha1] == -1 || this.tabuleiro[escolha2] == -1){
-            escolha2 = (int)Random.Range(1, tabuleiro.Length);
-            escolha1 = (int)Random.Range(1, tabuleiro.Length);
-        }
+        int escolha1, escolha2;
+        do{
+            escolha2 = (int)Random.Range(0, tabuleiro.Length);
+            escolha1 = (int)Random.Range(0, tabuleiro.Length);
+        }while(this.tabuleiro[escolha1] == this.tabuleiro[escolha2] || this.tabuleiro[escolha1] == -1 || this.tabuleiro[escolha2] == -1 || escolha1 == escolha2);
 
-        this.dica1 = escolha1;
-        this.dica2 = escolha2;
+        this.dica1 = escolha1+1;
+        this.dica2 = escolha2+1;
         falarDica();
     }
 
@@ -238,7 +249,6 @@ public class SpeekE : MonoBehaviour{
         estadoAtual.msg = estadoAtual.msg.Replace("$$", this.dica2.ToString());
 
         StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
-        Debug.Log(estadoAtual.msg);
         setConf();
         Speek();
         //startAnimation();
