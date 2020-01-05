@@ -119,12 +119,19 @@ public class GameController : MonoBehaviour {
 
                 btns[firstGuessIndex].image.sprite = gamePuzzles[firstGuessIndex];
 
+                //btns[firstGuessIndex].interactable = false;
+
                 texts[firstGuessIndex].enabled = false;
 
             } else if (!secondGuess)
             {
-                secondGuess = true;
                 secondGuessIndex = int.Parse(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name);
+
+                if(firstGuessIndex == secondGuessIndex){
+                    return;
+                }
+                
+                secondGuess = true;
 
                 secondGuessPuzzle = gamePuzzles[secondGuessIndex].name;
 
