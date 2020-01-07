@@ -10,9 +10,14 @@ public class MenuInicial : MonoBehaviour
     [SerializeField]
     InputField id = null;
 
+    [SerializeField]
+    Text vozes;
+
     void Start()
     {
         Speaker.Speak("ola mundo", null, Speaker.VoiceForName("Microsoft Daniel"));
+
+        vozes.text = Application.persistentDataPath;
     }
 
     // Update is called once per frame
