@@ -10,6 +10,7 @@ public class StaticValor : MonoBehaviour {
     public static bool condicaoAgente = true;
 
     public static int round = 1;
+    public static string nomeJogador = "";
 
     public static Arquivos arquivos;
 }

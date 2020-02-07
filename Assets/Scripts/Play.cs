@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Play : MonoBehaviour
 {
-    // Start is called before the first frame update
+    
+    [SerializeField]
+    InputField nome;
+
     void Start()
     {
         StaticValor.arquivos = new Arquivos(StaticValor.id);
@@ -16,8 +20,8 @@ public class Play : MonoBehaviour
         
     }
 
-    public void ChamarJogoHum()
-    {
+    public void ChamarJogoHum(){
+        StaticValor.nomeJogador = nome.text;
         UnityEngine.SceneManagement.SceneManager.LoadScene("jogo1");
     } 
 

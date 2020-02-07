@@ -153,7 +153,9 @@ public class SpeekE : MonoBehaviour{
                 this.ballonImage.SetActive(true);
             }
             if (rec == true){
-                estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
+                do{
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Alegre");
+                }while(estadoAtual == null);
             }else{
 
                 /*
@@ -169,9 +171,12 @@ public class SpeekE : MonoBehaviour{
                     estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
                 }*/
 
-                estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
+                do{
+                    estadoAtual = StaticValor.arquivos.pickUpEmocao("Triste");
+                }while(estadoAtual == null);
             }
             if(estadoAtual != null){
+                estadoAtual.msg = estadoAtual.msg.Replace("%%", StaticValor.nomeJogador);
                 StaticValor.arquivos.saveReacao(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
                 StaticValor.arquivos.registra();
                 setConf();
@@ -241,12 +246,15 @@ public class SpeekE : MonoBehaviour{
 
     private void falarDica(){
 
-        estadoAtual = StaticValor.arquivos.pickUpEmocao("Dica");
+        do{
+            estadoAtual = StaticValor.arquivos.pickUpEmocao("Dica");
+        }while(estadoAtual == null);
         if(estadoAtual == null){
             estadoAtual = StaticValor.arquivos.getFrases("3");
         }
         estadoAtual.msg = estadoAtual.msg.Replace("##", this.dica1.ToString());
         estadoAtual.msg = estadoAtual.msg.Replace("$$", this.dica2.ToString());
+        estadoAtual.msg = estadoAtual.msg.Replace("%%", StaticValor.nomeJogador);
 
         StaticValor.arquivos.saveDica(estadoAtual.msg, estadoAtual.codigo, estadoAtual.emocao);
         setConf();
@@ -258,6 +266,7 @@ public class SpeekE : MonoBehaviour{
 
         if(StaticValor.condicaoAgente){
             this.estadoAtual = StaticValor.arquivos.getFrases("13");
+            estadoAtual.msg = estadoAtual.msg.Replace("%%", StaticValor.nomeJogador);
         }else{
             this.estadoAtual = StaticValor.arquivos.getFrases("17");
         }
@@ -309,6 +318,7 @@ public class SpeekE : MonoBehaviour{
                 this.startGame.GetComponentInChildren<Text>().text = "Ate mais!";
                 if(StaticValor.condicaoAgente){
                     this.estadoAtual = StaticValor.arquivos.getFrases("16");
+                    estadoAtual.msg = estadoAtual.msg.Replace("%%", StaticValor.nomeJogador);
                 }else{
                     this.estadoAtual = StaticValor.arquivos.getFrases("20");
                 }

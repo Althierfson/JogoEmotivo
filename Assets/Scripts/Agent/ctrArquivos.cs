@@ -133,11 +133,12 @@ public class Arquivos{
         */
 
         //Random numAleatorio = new Random();
-        int escolha = (int)Random.Range(0, 2);
+        int escolha = (int)Random.Range(0, 6);
         Frase f = new Frase();
 
         foreach (Frase item in frases){
             if(item.emocao.Equals(sentimento)){
+                Debug.Log("Frase CTR: " + item.msg);
                 if(escolha <= 0){
                     f.codigo = item.codigo;
                     f.emocao = item.emocao;
